@@ -1,0 +1,24 @@
+{
+  "name": "elcard",
+  "author": {
+    "name": "EloenK",
+    "url": "https://github.com/Eloenk"
+  },
+  "version": "1.0.0",
+  "description": "A simple bot to tag everyone ",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Eloenk/Elcard"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "@whiskeysockets/baileys": "^6.0.1",
+    "pino": "^8.4.2",
+    "qrcode-terminal": "^0.12.0"
+  }
+}
