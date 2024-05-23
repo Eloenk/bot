@@ -16,11 +16,25 @@ class DeleteLinks {
   async process(key, message) {
     const text = this.#getText(key, message);
     const textt = 'Links not permitted ';
-  
 
     // Check if the message contains a link
     if (this.#linkRegex.test(text)) {
       try {
+        if(!key.remoteJid.includes('@g.us')) return;
+
+        const grp = await this.#socket.groupMetadata(key.remoteJid);
+        const members = grp.participants;
+  
+        const admins = [];
+        members.forEach(({id,admin}) => {
+          if (admin){
+            admins.push(id);
+          }
+        });
+
+
+        if (admins.includes(key.participant)) return;
+
         // Delete the message
         await this.#socket.deleteMessage(key.remoteJid, {
           id: key.id,
@@ -41,6 +55,7 @@ class DeleteLinks {
       }
     }
   }
+  
 }
 
 module.exports = DeleteLinks;
