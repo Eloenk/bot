@@ -38,7 +38,7 @@ class Bot {
     });
 
     this.#plugins.forEach((plugin) =>
-      plugin.init(this.#socket, this.#getText, this.#sendMessage,this.#imgMes)
+      plugin.init(this.#socket, this.#getText, this.#sendMessage,this.#imgMes,this.#audMes)
     );
   }
 
@@ -124,6 +124,25 @@ class Bot {
             console.error('Error processing image message:', err);
         }
     }
+}
+async #audMes(socket,message,remj,alofus) {
+  // Download the audio
+  const stream = await downloadContentFromMessage(message, 'audio');
+  let buffer = Buffer.alloc(0);
+  for await (const chunk of stream) {
+      buffer = Buffer.concat([buffer, chunk]);
+  }
+
+  // Resend the audio as a voice note
+  await socket.sendMessage(remj, {
+      audio: buffer,
+      mimetype: message.mimetype,
+      ptt: true,
+      mentions: alofus,
+  });
+
+  console.log('Voice message resent successfully.');
+
 }
 
   #getMessageFromStore = (key) => {
