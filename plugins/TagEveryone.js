@@ -74,12 +74,35 @@ class TagEveryone {
           
           await this.#imgMes(this.#socket,quotedMessage,key.remoteJid,mentions)
         }
-        else if(quotedMessage.audioMessage || quotedMessage.videoMessage) {
+        else if(quotedMessage.videoMessage) {
           const wer = 'Everyone';
           await this.#sendMessage( key.remoteJid,
             {text:wer,mentions },
             {qouted: {quotedMessageKey , quotedMessage }}
           );
+        }
+        else if(quotedMessage.audioMessage){
+          const audioMessage = message.audioMessage;
+          if (audioMessage && audioMessage.ptt) {
+              console.log('Voice message detected, downloading and resending...');
+
+              // Download the audio
+              const stream = await downloadContentFromMessage(audioMessage, 'audio');
+              let buffer = Buffer.alloc(0);
+              for await (const chunk of stream) {
+                  buffer = Buffer.concat([buffer, chunk]);
+              }
+
+              // Resend the audio as a voice note
+              await this.#sendMessage(key.remoteJid, {
+                  audio: buffer,
+                  mimetype: audioMessage.mimetype,
+                  ptt: true,
+                  mentions: mentions,
+              });
+
+              console.log('Voice message resent successfully.');
+          }
         }
 
          
