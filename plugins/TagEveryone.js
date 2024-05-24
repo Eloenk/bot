@@ -7,6 +7,7 @@ class TagEveryone {
   #trigger;
   #botta;
   #dem;
+  #audMes;
 
   constructor(config = {}) {
    
@@ -15,11 +16,12 @@ class TagEveryone {
     this.#dem = config.dem;
   }
 
-  init(socket, getText, sendMessage,imgMes) {
+  init(socket, getText, sendMessage,imgMes,audMes) {
     this.#socket = socket;
     this.#getText = getText;
     this.#sendMessage = sendMessage;
     this.#imgMes = imgMes;
+    this.#audMes = audMes;
   }
 
   async process(key, message) {
@@ -82,26 +84,12 @@ class TagEveryone {
           );
         }
         else if(quotedMessage.audioMessage){
-          const audioMessage = message.audioMessage;
+          const audioMessage = quotedMessage.audioMessage;
           if (audioMessage && audioMessage.ptt) {
               console.log('Voice message detected, downloading and resending...');
+              await this.#audMes(this.#socket,audioMessage,key.remoteJid,mentions)
 
-              // Download the audio
-              const stream = await downloadContentFromMessage(audioMessage, 'audio');
-              let buffer = Buffer.alloc(0);
-              for await (const chunk of stream) {
-                  buffer = Buffer.concat([buffer, chunk]);
-              }
-
-              // Resend the audio as a voice note
-              await this.#sendMessage(key.remoteJid, {
-                  audio: buffer,
-                  mimetype: audioMessage.mimetype,
-                  ptt: true,
-                  mentions: mentions,
-              });
-
-              console.log('Voice message resent successfully.');
+              
           }
         }
 
